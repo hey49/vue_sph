@@ -4,20 +4,15 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
+        <div class="swiper-container" ref="cur">
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
+            <div
+              class="swiper-slide"
+              v-for="(carousel, index) in bannerList"
+              :key="carousel.id"
+            >
+              <img :src="carousel.imgUrl" />
             </div>
-            <!-- <div class="swiper-slide">
-              <img src="./images/banner2.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner3.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner4.jpg" />
-            </div> -->
           </div>
           <!-- 如果需要分页器 -->
           <div class="swiper-pagination"></div>
@@ -101,7 +96,38 @@
 </template>
 
 <script>
-  export default {};
+  import { mapState } from "vuex";
+  import Swiper from "swiper";
+  export default {
+    mounted() {
+      this.$store.dispatch("home/getBannerList");
+    },
+    computed: {
+      ...mapState({
+        bannerList: (state) => state.home.bannerList,
+      }),
+    },
+    watch: {
+      //监听bannerList数据变化
+      bannerList: {
+        handler(newValue, oldValue) {
+          this.$nextTick(() => {
+            var mySwiper = new Swiper(this.$refs.cur, {
+              loop: true,
+              pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+              },
+              navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+              },
+            });
+          });
+        },
+      },
+    },
+  };
 </script>
 
 <style scoped lang="less">

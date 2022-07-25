@@ -64,13 +64,25 @@
     methods: {
       // 搜索按钮的回调函数：跳转search
       goSearch() {
+        let location = {
+          name: "search",
+          params: { keyword: this.keyword || undefined },
+        };
+        if (this.$route.query) {
+          location.query = this.$route.query;
+        }
+        this.$router.push(location);
+
         // 路由传参
         // 1. 字符串形式
         // this.$router.push("/search/" + this.keyword + "?k=" + this.keyword.toUpperCase());
         // 2. 模版字符串
         // this.$router.push(`/search/${this.keyword}?k=${this.keyword.toUpperCase()}`);
         // 3. 对象
-        this.$router.push({name: "search", params: {keyword: this.keyword || undefined}, query: {k: this.keyword.toUpperCase()}})
+        // this.$router.push({
+        //   name: "search",
+        //   params: { keyword: this.keyword || undefined },
+        // });
 
         // 编程式导航多次点击会出现navigationDuplicated 错误。
         // 因为vue-router引入了promise。
@@ -87,7 +99,7 @@
         //   }
         // );
         // console.log(this);
-        // 重写原型链 
+        // 重写原型链
       },
     },
   };

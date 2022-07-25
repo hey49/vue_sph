@@ -2,60 +2,61 @@
   <!-- 商品分类导航 -->
   <div class="type-nav">
     <div class="container">
-      <div @mouseleave="leaveIndex">
+      <div @mouseleave="leaveIndex" @mouseenter="enterShow">
         <h2 class="all">全部商品分类</h2>
-        <!-- 三级联动 -->
-        <div class="sort">
-          <div class="all-sort-list2" @click="goSearch">
-            <div
-              class="item"
-              v-for="(c1, index) in categoryList"
-              :key="c1.categoryId"
-              :class="{ cur: currentIndex == index }"
-            >
-              <h3 @mouseenter="changeIndex(index)">
-                <a
-                  :data-categoryName="c1.categoryName"
-                  :data-category1Id="c1.categoryId"
-                  >{{ c1.categoryName }}</a
-                >
-              </h3>
-              <!-- 二级目录 -->
+        <transition name="sort">
+          <div class="sort" v-show="show">
+            <div class="all-sort-list2" @click="goSearch">
               <div
-                class="item-list clearfix"
-                :style="{ display: currentIndex == index ? 'block' : 'none' }"
+                class="item"
+                v-for="(c1, index) in categoryList"
+                :key="c1.categoryId"
+                :class="{ cur: currentIndex == index }"
               >
+                <h3 @mouseenter="changeIndex(index)">
+                  <a
+                    :data-categoryName="c1.categoryName"
+                    :data-category1Id="c1.categoryId"
+                    >{{ c1.categoryName }}</a
+                  >
+                </h3>
+                <!-- 二级目录 -->
                 <div
-                  class="subitem"
-                  v-for="(c2, index) in c1.categoryChild"
-                  :key="c2.categoryId"
+                  class="item-list clearfix"
+                  :style="{ display: currentIndex == index ? 'block' : 'none' }"
                 >
-                  <dl class="fore">
-                    <dt>
-                      <a
-                        :data-categoryName="c2.categoryName"
-                        :data-category2Id="c2.categoryId"
-                        >{{ c2.categoryName }}</a
-                      >
-                    </dt>
-                    <dd>
-                      <em
-                        v-for="(c3, index) in c2.categoryChild"
-                        :key="c3.categoryId"
-                      >
+                  <div
+                    class="subitem"
+                    v-for="(c2, index) in c1.categoryChild"
+                    :key="c2.categoryId"
+                  >
+                    <dl class="fore">
+                      <dt>
                         <a
-                          :data-categoryName="c3.categoryName"
-                          :data-category3Id="c3.categoryId"
-                          >{{ c3.categoryName }}</a
+                          :data-categoryName="c2.categoryName"
+                          :data-category2Id="c2.categoryId"
+                          >{{ c2.categoryName }}</a
                         >
-                      </em>
-                    </dd>
-                  </dl>
+                      </dt>
+                      <dd>
+                        <em
+                          v-for="(c3, index) in c2.categoryChild"
+                          :key="c3.categoryId"
+                        >
+                          <a
+                            :data-categoryName="c3.categoryName"
+                            :data-category3Id="c3.categoryId"
+                            >{{ c3.categoryName }}</a
+                          >
+                        </em>
+                      </dd>
+                    </dl>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </transition>
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -77,12 +78,13 @@
   export default {
     name: "TypeNav",
     data() {
-      return { currentIndex: -1 };
+      return { currentIndex: -1, show: true };
     },
     // 组件挂载完毕，向服务器发请求
     mounted() {
-      // 通知vuex发请求，获取数据，存储于仓库中
-      this.$store.dispatch("home/categoryList");
+      if (this.$route.path != "/home") {
+        this.show = false;
+      }
     },
     computed: {
       ...mapState({
@@ -99,6 +101,7 @@
       }, 50),
       leaveIndex() {
         this.currentIndex = -1;
+        if (this.$route.path != "/home") this.show = false;
       },
       goSearch(event) {
         let element = event.target;
@@ -106,7 +109,7 @@
           element.dataset;
         if (categoryname) {
           let location = { name: "search" };
-          let query = { categoryname: categoryname };
+          let query = { categoryName: categoryname };
           if (category1id) {
             query.category1Id = category1id;
           } else if (category2id) {
@@ -115,8 +118,14 @@
             query.category3Id = category3id;
           }
           location.query = query;
+          if (this.$route.params) {
+            location.params = this.$route.params;
+          }
           this.$router.push(location);
         }
+      },
+      enterShow() {
+        this.show = true;
       },
     },
   };
@@ -236,6 +245,16 @@
             background-color: skyblue;
           }
         }
+      }
+
+      .sort-enter {
+        height: 0px;
+      }
+      .sort-enter-to {
+        height: 461px;
+      }
+      .sort-enter-active {
+        transition: all 0.5s linear;
       }
     }
   }

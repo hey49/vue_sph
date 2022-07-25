@@ -59,7 +59,7 @@ export default new VueRouter({
     {
       path: "/search/:keyword?",
       component: Search,
-      meta: { show: false },
+      meta: { show: true },
       name: "search",
     },
     //重定向
