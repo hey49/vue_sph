@@ -1,15 +1,36 @@
-// 仓库存储数据
-const state = {};
-// 修改state
-const mutations = {};
-// 书写项目逻辑，处理异步
-const actions = {};
-// 计算属性，简化仓库数据
-const getters = {};
+import { reqGetSearchInfo } from "@/api";
+
+const state = {
+  searchList: {},
+};
+const mutations = {
+  GETSEARCHLIST(state, searchList) {
+    state.searchList = searchList;
+  },
+};
+const actions = {
+  async getSearchList({ commit }, params = {}) {
+    let result = await reqGetSearchInfo(params);
+    if (result.code == 200) {
+      commit("GETSEARCHLIST", result.data);
+    }
+  },
+};
+const getters = {
+  goodsList(state) {
+    return state.searchList.goodsList || [];
+  },
+  attrsList(state){
+    return state.searchList.attrsList || [];
+  },
+  trademarkList(state){
+    return state.searchList.trademarkList || [];
+  }
+};
 
 export default {
   state,
   mutations,
   actions,
-  getters, 
+  getters,
 };

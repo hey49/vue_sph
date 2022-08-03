@@ -100,7 +100,7 @@
   import Swiper from "swiper";
   export default {
     mounted() {
-      this.$store.dispatch("home/getBannerList");
+      this.$store.dispatch("home/getBannerList"); 
     },
     computed: {
       ...mapState({
